@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Discord Timestamp Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#2b2d31;
+    --card:#36393f;
+    --text:#dcddde;
+    --muted:#b9bbbe;
+    --primary:#5865F2;
+    --radius:8px;
+    --shadow:0 4px 12px rgba(0,0,0,0.2);
+  }
+  body{
+    margin:0;
+    font-family:'Roboto',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:1rem;
+  }
+  .card{
+    background:var(--card);
+    padding:2rem;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    width:100%;
+    max-width:380px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;          /* center everything */
+    gap:0.8rem;                  /* consistent spacing */
+  }
+  h2{
+    margin:0;
+    font-weight:500;
+    color:var(--primary);
+    text-align:center;
+  }
+  label{
+    align-self:flex-start;      /* left‑align label */
+    font-size:.9rem;
+    color:var(--muted);
+    margin-bottom:-0.3rem;       /* pull label closer to its field */
+  }
+  input, select{
+    width:100%;
+    max-width:300px;
+    padding:.6rem 1rem;
+    border:1px solid #40444b;
+    border-radius:var(--radius);
+    background:#202225;
+    color:#dcddde;
+    font-size:1rem;
+    transition:border-color .2s;
+  }
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--primary);
+  }
+  button{
+    width:100%;
+    max-width:300px;
+    padding:.8rem;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius);
+    font-size:1rem;
+    font-weight:500;
+    cursor:pointer;
+    transition:background .2s;
+  }
+  button:hover{background:#4752c4;}
+  #output{
+    width:100%;
+    max-width:300px;
+    margin-top:1rem;
+    padding:.8rem;
+    background:#40444b;
+    border-radius:var(--radius);
+    font-family:monospace;
+    text-align:center;
+    word-break:break-all;
+    color:#dcddde;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h2>Discord Timestamp Generator</h2>
+
+  <label for="date">Date</label>
+  <input type="date" id="date" required>
+
+  <label for="time">Time (24‑h)</label>
+  <input type="time" id="time" required>
+
+  <label for="tz">Time‑zone</label>
+  <select id="tz">
+    <option value="0">GMT (UTC+0)</option>
+    <option value="1">BST (UTC+1)</option>
+  </select>
+
+  <button id="gen">Generate</button>
+
+  <div id="output"></div>
+</div>
+
+<script>
+document.getElementById('gen').addEventListener('click', () => {
+  const dateVal = document.getElementById('date').value;
+  const timeVal = document.getElementById('time').value;
+  const tzOffset = parseInt(document.getElementById('tz').value, 10); // 0 = GMT, 1 = BST
+
+  if (!dateVal || !timeVal) {
+    alert('Please select both a date and a time.');
+    return;
+  }
+
+  const [y, m, d] = dateVal.split('-').map(Number);
+  const [h, mi, s] = timeVal.split(':').map(Number);
+
+  // Convert local (GMT/BST) to UTC
+  const utcMs = Date.UTC(y, m - 1, d, h - tzOffset, mi, s || 0);
+  const unixSec = Math.floor(utcMs / 1000);
+
+  const discordTag = `<t:${unixSec}:F>`;
+  document.getElementById('output').textContent = discordTag;
+});
+</script>
+</body>
+</html>
